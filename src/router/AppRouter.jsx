@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 
 import ProtectedRoute from "../components/ProtectedRoute"
 import AppLayout from "../layouts/AppLayout"
+import useAuth from "../hooks/useAuth"
 
 import LoginPage from "../pages/LoginPage"
 import RegisterPage from "../pages/RegisterPage"
@@ -79,3 +80,5 @@ function AppRouter() {
         </BrowserRouter>
     )
 }
+
+export default AppRouter
