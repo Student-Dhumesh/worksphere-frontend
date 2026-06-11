@@ -47,7 +47,7 @@ function LoginPage() {
                 justify-center
                 px-4">
 
-            <div className="text-center mb-8">
+            <div className="w-full max-w-md">
 
                 <div className="text-center mb-8">
                     <h1

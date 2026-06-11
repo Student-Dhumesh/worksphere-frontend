@@ -18,7 +18,7 @@ function RegisterPage() {
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value})
+        setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
     const handleSubmit = async (e) => {
@@ -40,38 +40,38 @@ function RegisterPage() {
         }
     }
 
-  return (
-    <div
-        className="min-h-screen
+    return (
+        <div
+            className="min-h-screen
             bg-gray-950
             flex
             items-center
             justify-center
             px-4">
 
-        <div className="w-full max-w-md">
+            <div className="w-full max-w-md">
 
-            <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-white">
-                    Work
-                    <span className="text-indigo-500">
-                        Sphere
-                    </span>
-                </h1>
-                <p className="text-gray-400 mt-2 text-sm">
-                    Create your account
-                </p>
-            </div>
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold text-white">
+                        Work
+                        <span className="text-indigo-500">
+                            Sphere
+                        </span>
+                    </h1>
+                    <p className="text-gray-400 mt-2 text-sm">
+                        Create your account
+                    </p>
+                </div>
 
-            <div
-                className="bg-gray-900
+                <div
+                    className="bg-gray-900
                     border
                     border-bs-gray-800
                     rounded-2xl
                     p-8">
-                {error && (
-                    <div
-                        className="mb-4
+                    {error && (
+                        <div
+                            className="mb-4
                             px-4
                             py-3
                             rounded-lg
@@ -80,13 +80,13 @@ function RegisterPage() {
                             border-red-500/20
                             text-red-400
                             text-sm">
-                        {error}
-                    </div>
-                )}
+                            {error}
+                        </div>
+                    )}
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="space-y-5">
+                    <form
+                        onSubmit={handleSubmit}
+                        className="space-y-5">
 
                         <div>
                             <label
@@ -98,8 +98,8 @@ function RegisterPage() {
                                 Full Name
                             </label>
 
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
@@ -134,8 +134,8 @@ function RegisterPage() {
                                 Email
                             </label>
 
-                            <input 
-                                type="email" 
+                            <input
+                                type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
@@ -170,8 +170,8 @@ function RegisterPage() {
                                 Password
                             </label>
 
-                            <input 
-                                type="password" 
+                            <input
+                                type="password"
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
@@ -255,29 +255,29 @@ function RegisterPage() {
                             }
 
                         </button>
-                </form>
+                    </form>
 
-                <p
-                    className="text-center
+                    <p
+                        className="text-center
                         text-gray-500
                         text-sm
                         mt-6">
-                    Already have an account?{" "}
-                    <Link
-                        to="/login"
-                        className="text-indigo-400
+                        Already have an account?{" "}
+                        <Link
+                            to="/login"
+                            className="text-indigo-400
                             hover:text-indigo-300
                             font-medium
                             transition-colors"
-                    >
-                        Sign in
-                    </Link>
-                </p>
+                        >
+                            Sign in
+                        </Link>
+                    </p>
 
+                </div>
             </div>
         </div>
-    </div>
-  )
+    )
 }
 
 export default RegisterPage
