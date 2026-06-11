@@ -123,6 +123,25 @@ function Navbar() {
                         </div>
 
                         <button
+                            onClick={() => {
+                                navigate("/profile")
+                                setDropdownOpen(false)
+                            }}
+                            className="w-full
+                                text-left
+                                px-4
+                                py-2.5
+                                text-sm
+                                text-gray-300
+                                hover:bg-gray-700
+                                transition-colors"
+                        >
+                            Profile Settings
+                        </button>
+
+                        <div className="border-t border-gray-700" />
+
+                        <button
                             onClick={handleLogout}
                             className="w-full
                                 text-left

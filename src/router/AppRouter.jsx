@@ -10,6 +10,7 @@ import DashboardPage from "../pages/DashboardPage"
 import WorkspacePage from "../pages/WorkspacePage"
 import ProjectPage from "../pages/ProjectPage"
 import TaskPage from "../pages/TaskPage"
+import ProfilePage from "../pages/ProfilePage"
 
 function AppRouter() {
 
@@ -53,6 +54,11 @@ function AppRouter() {
                     <Route
                         path="dashboard"
                         element={<DashboardPage />}
+                    />
+
+                    <Route 
+                        path="profile"
+                        element={<ProfilePage />}
                     />
 
                     <Route
