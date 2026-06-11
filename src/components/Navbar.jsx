@@ -73,7 +73,7 @@ function Navbar() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M19 91-7 7-7-7"
+                            d="M19 9l-7 7-7-7"
                         />
 
                     </svg>
@@ -104,7 +104,7 @@ function Navbar() {
                             </p>
 
                             <p className="text-gray-400
-                                    text-xl
+                                    text-sm
                                     truncate">
                                 {user?.email}
                             </p>

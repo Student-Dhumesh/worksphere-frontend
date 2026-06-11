@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useOutletContext } from "react-router-dom"
 import useAuth from "../hooks/useAuth"
 import workspaceApi from "../api/workspaceApi"
 import WorkspaceCard from "../components/workspace/WorkspaceCard"
@@ -7,6 +8,7 @@ import WorkspaceForm from "../components/workspace/WorkspaceForm"
 function DashboardPage() {
 
   const { user } = useAuth()
+  const { refreshWorkspaces } = useOutletContext()
 
   const [workspaces, setWorkspaces] = useState([])
   const [loading, setLoading] = useState(true)
@@ -28,10 +30,15 @@ function DashboardPage() {
     }
   }
 
+  useEffect(() => {
+    fetchWorkspaces()
+  }, [])
+
   const handleCreate = async (data) => {
     const response = await workspaceApi.create(data)
     setWorkspaces([...workspaces, response.data])
     setShowForm(false)
+    refreshWorkspaces()
   }
 
   const handleUpdate = async (data) => {
@@ -45,12 +52,13 @@ function DashboardPage() {
 
     setEditingWorkspace(null)
     setShowForm(false)
+    refreshWorkspaces()
   }
 
   const handleDelete = async (workspaceId) => {
     await workspaceApi.delete(workspaceId)
-
     setWorkspaces(workspaces.filter(w => w.id !== workspaceId))
+    refreshWorkspaces()
   }
 
   const handleEdit = (workspace) => {
@@ -148,7 +156,7 @@ function DashboardPage() {
           )}
         </div>
 
-      ) : workspace.length === 0 ? (
+      ) : workspaces.length === 0 ? (
 
         <div
           className="flex
@@ -240,7 +248,7 @@ function DashboardPage() {
           onSubmit={
             editingWorkspace
               ? handleUpdate
-              : handleDelete
+              : handleCreate
           }
           onClose={handleCloseForm}
         />

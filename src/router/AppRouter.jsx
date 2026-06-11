@@ -19,11 +19,11 @@ function AppRouter() {
         <BrowserRouter>
             <Routes>
 
-                <Route 
+                <Route
                     path="/login"
                     element={
-                        isAuthenticated 
-                            ? <Navigate to="/dashboard" replace /> 
+                        isAuthenticated
+                            ? <Navigate to="/dashboard" replace />
                             : <LoginPage />
                     }
                 />
@@ -44,32 +44,33 @@ function AppRouter() {
                             <AppLayout />
                         </ProtectedRoute>
                     }
-                />
+                >
+                    <Route
+                        index
+                        element={<Navigate to="/dashboard" replace />}
+                    />
 
-                <Route
-                    index
-                    element={<Navigate to="/dashboard" replace />}
-                />
+                    <Route
+                        path="dashboard"
+                        element={<DashboardPage />}
+                    />
 
-                <Route
-                    path="dashboard"
-                    element={<DashboardPage />}
-                />
+                    <Route
+                        path="workspaces/:workspaceId"
+                        element={<WorkspacePage />}
+                    />
 
-                <Route
-                    path="workspaces/:workspaceId"
-                    element={<WorkspacePage />}
-                />
+                    <Route
+                        path="workspaces/:workspaceId/projects/:projectId"
+                        element={<ProjectPage />}
+                    />
 
-                <Route
-                    path="workspaces/:workspaceId/projects/:projectId"
-                    element={<ProjectPage />}
-                />
+                    <Route
+                        path="workspaces/:workspaceId/projects/:projectId/tasks/:taskId"
+                        element={<TaskPage />}
+                    />
 
-                <Route
-                    path="workspaces/:workspaceId/projects/:projectId/tasks/:taskId"
-                    element={<TaskPage />}
-                />
+                </Route>
 
                 <Route
                     path="*"

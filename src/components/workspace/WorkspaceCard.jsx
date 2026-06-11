@@ -7,7 +7,7 @@ function WorkspaceCard({ workspace, onEdit, onDelete }) {
     const navigate = useNavigate()
     const { user } = useAuth()
 
-    const isOwner = workspace.ownerEmail-- - user?.email
+    const isOwner = workspace.ownerEmail === user?.email
 
     const handleDelete = async (e) => {
         e.stopPropagation()

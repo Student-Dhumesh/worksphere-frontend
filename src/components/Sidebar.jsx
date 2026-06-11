@@ -3,27 +3,10 @@ import { useState, useEffect } from "react"
 import workspaceApi from "../api/workspaceApi"
 import useAuth from "../hooks/useAuth"
 
-function Sidebar() {
+function Sidebar({ workspaces, loading }) {
 
     const { user } = useAuth()
     const navigate = useNavigate()
-    const [workspaces, setWorkspaces] = useState([])
-    const [loading, setLoading] = useState(true)
-
-    const fetchWorkspaces = async () => {
-        try {
-            const response = await workspaceApi.getAll()
-            setWorkspaces(response.data)
-        } catch (error) {
-            console.error("Failed to fetch workspaces: ", error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchWorkspaces()
-    }, [])
 
     return (
         <aside
@@ -109,10 +92,10 @@ function Sidebar() {
                         No workspaces yet.
                     </p>
                 ) : (
-                    workspaces.map((workspaces) => (
+                    workspaces.map((workspace) => (
                         <NavLink
-                            key={workspaceApi.id}
-                            to={`/workspaces/${workspaceApi.id}`}
+                            key={workspace.id}
+                            to={`/workspaces/${workspace.id}`}
                             className={({ isActive }) =>
                                 `flex
                                 items-center

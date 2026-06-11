@@ -25,32 +25,32 @@ axiosInstance.interceptors.response.use(
 
         if (error.response?.status == 401 && !originalRequest._retry) {
             originalRequest._retry = true
-        }
 
-        try {
-            const refreshToken = localStorage.getItem("refreshToken")
+            try {
+                const refreshToken = localStorage.getItem("refreshToken")
 
-            const response = await axios.post(
-                "http://localhost:8080/api/auth/refresh",
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${refreshToken}`
+                const response = await axios.post(
+                    "http://localhost:8080/api/auth/refresh",
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${refreshToken}`
+                        }
                     }
-                }
-            )
+                )
 
-            const { accessToken } = response.data
+                const { accessToken } = response.data
 
-            localStorage.setItem("accessToken", accessToken)
+                localStorage.setItem("accessToken", accessToken)
 
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`
+                originalRequest.headers.Authorization = `Bearer ${accessToken}`
 
-            return axiosInstance(originalRequest)
-        } catch (refreshError) {
-            localStorage.clear()
-            window.location.href = "/login"
-            return Promise.reject(refreshError)
+                return axiosInstance(originalRequest)
+            } catch (refreshError) {
+                localStorage.clear()
+                window.location.href = "/login"
+                return Promise.reject(refreshError)
+            }
         }
 
         return Promise.reject(error)

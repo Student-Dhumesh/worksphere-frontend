@@ -24,10 +24,10 @@ const workspaceApi = {
         axiosInstance.post(`/workspaces/${workspaceId}/members`, data),
 
     updateMemberRole: (workspaceId, userId, data) => 
-        axiosInstance.post(`/workspaces/${workspaceId}/members/${userId}`, data),
+        axiosInstance.patch(`/workspaces/${workspaceId}/members/${userId}`, data),
 
     removeMember: (workspaceId, userId) => 
-        axiosInstance.delete(`workspaces/${workspaceId}/members/${userId}`),
+        axiosInstance.delete(`/workspaces/${workspaceId}/members/${userId}`),
 }
 
 export default workspaceApi

@@ -321,7 +321,7 @@ function WorkspacePage() {
                 </div>
             )}
 
-            {activeTab === 'members' && (
+            {activeTab === "members" && (
                 <div className="max-w-xl space-y-6">
 
                     {isOwner && (

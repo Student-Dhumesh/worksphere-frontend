@@ -17,7 +17,6 @@ function LoginPage() {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
-        setError(null)
     }
 
     const handleSubmit = async (e) => {

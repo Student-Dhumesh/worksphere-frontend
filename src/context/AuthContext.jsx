@@ -19,7 +19,12 @@ export function AuthProvider({ children }) {
 
             try {
                 const response = await authApi.getMe()
-                setUser(response.data)
+                if (response.data) {
+                    setUser(response.data)
+                } else {
+                    localStorage.clear()
+                    setUser(null)
+                }
             } catch (error) {
                 localStorage.clear()
                 setUser(null)

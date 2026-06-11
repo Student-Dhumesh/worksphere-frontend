@@ -23,7 +23,7 @@ const taskApi = {
         axiosInstance.patch(`/tasks/${taskId}/status`, data),
 
     delete: (taskId) => 
-        axiosInstance.delete(`/tasks/%{taskId}`),
+        axiosInstance.delete(`/tasks/${taskId}`),
 }
 
 export default taskApi
