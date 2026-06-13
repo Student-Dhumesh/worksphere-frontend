@@ -4,6 +4,7 @@ function ProjectCard({
     project,
     workspaceId,
     isOwner,
+    isOwnerOrManager,
     onEdit,
     onDelete
 }) {
@@ -42,7 +43,7 @@ function ProjectCard({
 
             <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                    <div 
+                    <div
                         className="w-9
                             h-9
                             rounded-lg
@@ -54,7 +55,7 @@ function ProjectCard({
                             font-bold">
                         {project.name.charAt(0).toUpperCase()}
                     </div>
-                    <h3 
+                    <h3
                         className="text-white
                             font-semibold
                             text-sm
@@ -64,14 +65,15 @@ function ProjectCard({
                     </h3>
                 </div>
 
-                {isOwner && (
-                    <div 
-                        className="flex
+                <div
+                    className="flex
                             items-center
                             gap-1
                             opacity-0
                             group-hover:opacity-100
                             transition-opacity">
+
+                    {isOwnerOrManager && (
                         <button
                             onClick={handleEdit}
                             className="p-1.5
@@ -100,6 +102,9 @@ function ProjectCard({
                                 />
                             </svg>
                         </button>
+                    )}
+
+                    {isOwner && (
                         <button
                             onClick={handleDelete}
                             className="p-1.5
@@ -128,8 +133,9 @@ function ProjectCard({
                                 />
                             </svg>
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
+
             </div>
 
             {project.description && (

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import useAuth from "../hooks/useAuth"
 import taskApi from "../api/taskApi"
+import workspaceApi from "../api/workspaceApi"
 import CommentList from "../components/comment/CommentList"
 import CommentForm from "../components/comment/CommentForm"
 
@@ -26,28 +27,49 @@ function TaskPage() {
     const navigate = useNavigate()
 
     const [task, setTask] = useState(null)
+    const [workspace, setWorkspace] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+
+    const [isOwner, setIsOwner] = useState(false)
+    const [isOwnerOrManager, setIsOwnerOrManager] = useState(false)
+
+    const currentUserEmail = user?.email
 
     useEffect(() => {
         fetchTask()
     }, [taskId])
 
+    useEffect(() => {
+        if (!workspace || !user) return
+
+        const owner = workspace.ownerEmail === user.email
+
+        const memberRole = workspace.members
+            ?.find(m => m.email === user.email)?.role || null
+
+        const ownerOrManager = owner || memberRole === "MANAGER"
+
+        setIsOwner(owner)
+        setIsOwnerOrManager(ownerOrManager)
+    }, [workspace, user])
+
     const fetchTask = async () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await taskApi.getById(taskId)
-            setTask(response.data)
+            const [taskRes, workspaceRes] = await Promise.all([
+                taskApi.getById(taskId),
+                workspaceApi.getById(workspaceId),
+            ])
+            setTask(taskRes.data)
+            setWorkspace(workspaceRes.data)
         } catch (err) {
             setError("Failed to load task.")
         } finally {
             setLoading(false)
         }
     }
-
-    const isOwnerOrManager = user?.role === "ADMIN"
-        || user?.role === "MANAGER"
 
     const handleStatusChange = async (e) => {
         try {

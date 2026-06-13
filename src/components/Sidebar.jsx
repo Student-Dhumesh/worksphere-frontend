@@ -1,6 +1,4 @@
 import { NavLink, useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react"
-import workspaceApi from "../api/workspaceApi"
 import useAuth from "../hooks/useAuth"
 
 function Sidebar({ workspaces, loading }) {

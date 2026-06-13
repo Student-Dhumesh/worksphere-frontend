@@ -13,12 +13,16 @@ function TaskCard({
     workspaceId,
     projectId,
     isOwner,
+    isOwnerOrManager,
+    currentUserEmail,
     onEdit,
     onDelete,
     onStatusChange,
 }) {
 
     const navigate = useNavigate()
+
+    const hasFullControl = isOwnerOrManager || task.createdByEmail === currentUserEmail
 
     const handleDelete = async (e) => {
         e.stopPropagation()
@@ -73,13 +77,13 @@ function TaskCard({
                     {task.title}
                 </p>
 
-                {isOwner && (
-                    <div className="flex
+                <div className="flex
                             items-center gap-1
                             opacity-0
                             group-hover:opacity-100
                             transition-opacity
                             shrink-0">
+                    {hasFullControl && (
                         <button
                             onClick={handleEdit}
                             className="p-1
@@ -108,6 +112,9 @@ function TaskCard({
                                 />
                             </svg>
                         </button>
+                    )}
+
+                    {hasFullControl && (
                         <button
                             onClick={handleDelete}
                             className="p-1
@@ -136,8 +143,8 @@ function TaskCard({
                                 />
                             </svg>
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {task.description && (

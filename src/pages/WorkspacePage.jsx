@@ -8,6 +8,9 @@ import ProjectForm from "../components/project/ProjectForm"
 
 function WorkspacePage() {
 
+    const [isOwner, setIsOwner] = useState(false)
+    const [isOwnerOrManager, setIsOwnerOrManager] = useState(false)
+
     const { workspaceId } = useParams()
     const { user } = useAuth()
     const navigate = useNavigate()
@@ -29,6 +32,18 @@ function WorkspacePage() {
         fetchData()
     }, [workspaceId])
 
+    useEffect(() => {
+        if (!workspace || !user) return
+
+        const owner = workspace.ownerEmail === user.email
+
+        const memberRole = workspace.members
+            ?.find(m => m.email === user.email)?.role || null
+
+        setIsOwner(owner)
+        setIsOwnerOrManager(owner || memberRole === 'MANAGER')
+    }, [workspace, user])
+
     const fetchData = async () => {
         setLoading(true)
         setError(null)
@@ -45,8 +60,6 @@ function WorkspacePage() {
             setLoading(false)
         }
     }
-
-    const isOwner = workspace?.ownerEmail === user?.email
 
     const handleCreateProject = async (data) => {
         const response = await projectApi.create({
@@ -109,6 +122,28 @@ function WorkspacePage() {
         }
     }
 
+    const handleUpdateMemberRole = async (userId, role) => {
+        try {
+            await workspaceApi.updateMemberRole(
+                workspaceId,
+                userId,
+                { role }
+            )
+            setWorkspace({
+                ...workspace,
+                members: workspace.members.map(m =>
+                    m.id === userId ? { ...m, role } : m
+                ),
+            })
+        } catch (err) {
+            alert(
+                err.response?.data?.message
+                ||
+                "Failed to update role."
+            )
+        }
+    }
+
     const handleRemoveMember = async (userId) => {
         if (!confirm("Remove this member?")) return
         try {
@@ -127,7 +162,7 @@ function WorkspacePage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div 
+                <div
                     className="w-8
                         h-8
                         border-4
@@ -141,7 +176,7 @@ function WorkspacePage() {
 
     if (error) {
         return (
-            <div 
+            <div
                 className="px-4
                     py-3
                     rounded-lg
@@ -217,7 +252,7 @@ function WorkspacePage() {
                 </button>
             </div>
 
-            <div 
+            <div
                 className="flex
                     gap-1
                     mb-6
@@ -247,14 +282,14 @@ function WorkspacePage() {
             {activeTab === "projects" && (
                 <div>
                     {projects.length === 0 ? (
-                        <div 
+                        <div
                             className="flex
                                 flex-col
                                 items-center
                                 justify-center
                                 py-20
                                 text-center">
-                            <div 
+                            <div
                                 className="w-14
                                     h-14
                                     rounded-2xl
@@ -300,7 +335,7 @@ function WorkspacePage() {
                             </button>
                         </div>
                     ) : (
-                        <div 
+                        <div
                             className="grid
                                 grid-cols-1
                                 md:grid-cols-2
@@ -312,6 +347,7 @@ function WorkspacePage() {
                                     project={project}
                                     workspaceId={workspaceId}
                                     isOwner={isOwner}
+                                    isOwnerOrManager={isOwnerOrManager}
                                     onEdit={handleEditProject}
                                     onDelete={handleDeleteProject}
                                 />
@@ -325,7 +361,7 @@ function WorkspacePage() {
                 <div className="max-w-xl space-y-6">
 
                     {isOwner && (
-                        <div 
+                        <div
                             className="bg-gray-900
                                 border
                                 border-gray-800
@@ -336,7 +372,7 @@ function WorkspacePage() {
                             </h3>
 
                             {memberError && (
-                                <div 
+                                <div
                                     className="mb-3
                                         px-4
                                         py-3
@@ -420,7 +456,7 @@ function WorkspacePage() {
                         </div>
                     )}
 
-                    <div 
+                    <div
                         className="bg-gray-900
                             border
                             border-gray-800
@@ -475,14 +511,39 @@ function WorkspacePage() {
                                         </div>
 
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs
-                                                    px-2
-                                                    py-0.5
-                                                    rounded-full
-                                                    bg-gray-800
-                                                    text-gray-400">
-                                                {member.role}
-                                            </span>
+                                            {isOwner ? (
+                                                <select
+                                                    value={member.role}
+                                                    onChange={(e) =>
+                                                        handleUpdateMemberRole(member.id, e.target.value)
+                                                    }
+                                                    className="text-xs
+                                                        bg-gray-800
+                                                        border
+                                                        border-gray-700
+                                                        text-gray-300
+                                                        rounded-md
+                                                        px-2
+                                                        py-0.5
+                                                        focus:outline-none
+                                                        focus:border-indigo-500
+                                                        transition-colors"
+                                                >
+                                                    <option value="MEMBER">MEMBER</option>
+                                                    <option value="MANAGER">MANAGER</option>
+                                                </select>
+                                            ) : (
+                                                <span
+                                                    className="text-xs
+                                                        px-2
+                                                        py-0.5
+                                                        rounded-full
+                                                        bg-gray-800
+                                                        text-gray-400">
+                                                    {member.role}
+                                                </span>
+                                            )}
+
                                             {isOwner && (
                                                 <button
                                                     onClick={() =>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import useAuth from "../hooks/useAuth"
+import workspaceApi from "../api/workspaceApi"
 import projectApi from "../api/projectApi"
 import taskApi from "../api/taskApi"
 import TaskCard from "../components/task/TaskCard"
@@ -28,21 +29,47 @@ function ProjectPage() {
 
     const [project, setProject] = useState(null)
     const [tasks, setTasks] = useState([])
+    const [workspace, setWorkspace] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [showTaskForm, setShowTaskForm] = useState(false)
     const [editingTask, setEditingTask] = useState(null)
 
+    const [isOwner, setIsOwner] = useState(false)
+    const [isOwnerOrManager, setIsOwnerOrManager] = useState(false)
+
+    const currentUserEmail = user?.email
+
+    useEffect(() => {
+        fetchData()
+    }, [projectId])
+
+    useEffect(() => {
+        if (!workspace || !user) return
+
+        const owner = workspace.ownerEmail === user.email
+
+        const memberRole = workspace.members
+            ?.find(m => m.email === user.email)?.role || null
+
+        const ownerOrManager = owner || memberRole === "MANAGER"
+
+        setIsOwner(owner)
+        setIsOwnerOrManager(ownerOrManager)
+    }, [workspace, user])
+
     const fetchData = async () => {
         setLoading(true)
         setError(null)
         try {
-            const [projectRes, tasksRes] = await Promise.all([
+            const [projectRes, tasksRes, workspaceRes] = await Promise.all([
                 projectApi.getById(projectId),
                 taskApi.getByProject(projectId),
+                workspaceApi.getById(workspaceId),
             ])
             setProject(projectRes.data)
             setTasks(tasksRes.data)
+            setWorkspace(workspaceRes.data)
         } catch (err) {
             setError("Failed to load project.")
         } finally {
@@ -50,46 +77,50 @@ function ProjectPage() {
         }
     }
 
-    useEffect(() => {
-        fetchData()
-    }, [projectId])
-
-    const isOwner = user?.role === "ADMIN"
-        || user?.role === "MANAGER"
-
-
     const handleCreateTask = async (data) => {
-        const response = await taskApi.create({
-            ...data,
-            projectId: Number(projectId),
-        })
-        setTasks([...tasks, response.data])
-        setShowTaskForm(false)
+        try {
+            const response = await taskApi.create({
+                ...data,
+                projectId: Number(projectId),
+            })
+            setTasks([...tasks, response.data])
+            setShowTaskForm(false)
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to create task.")
+        }
     }
 
     const handleUpdateTask = async (data) => {
-        const response = await taskApi.update(
-            editingTask.id, data
-        )
-        setTasks(tasks.map(t =>
-            t.id === editingTask.id ? response.data : t
-        ))
-        setEditingTask(null)
-        setShowTaskForm(false)
+        try {
+            const response = await taskApi.update(editingTask.id, data)
+            setTasks(tasks.map(t =>
+                t.id === editingTask.id ? response.data : t
+            ))
+            setEditingTask(null)
+            setShowTaskForm(false)
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to update task.")
+        }
     }
 
     const handleUpdateStatus = async (taskId, status) => {
-        const response = await taskApi.updateStatus(
-            taskId, { status }
-        )
-        setTasks(tasks.map(t =>
-            t.id === taskId ? response.data : t
-        ))
+        try {
+            const response = await taskApi.updateStatus(taskId, { status })
+            setTasks(tasks.map(t =>
+                t.id === taskId ? response.data : t
+            ))
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to update status.")
+        }
     }
 
     const handleDeleteTask = async (taskId) => {
-        await taskApi.delete(taskId)
-        setTasks(tasks.filter(t => t.id !== taskId))
+        try {
+            await taskApi.delete(taskId)
+            setTasks(tasks.filter(t => t.id !== taskId))
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to delete task.")
+        }
     }
 
     const handleEditTask = (task) => {
@@ -140,12 +171,8 @@ function ProjectPage() {
     return (
         <div className="flex flex-col h-full">
 
-            <div className="flex
-                    items-center
-                    justify-between
-                    mb-6">
+            <div className="flex items-center justify-between mb-6">
                 <div>
-
                     <div className="flex items-center gap-2 mb-1">
                         <button
                             onClick={() => navigate('/dashboard')}
@@ -225,13 +252,14 @@ function ProjectPage() {
                             px-3
                             py-1.5
                             rounded-lg
-                            bg-gray-900 border
+                            bg-gray-900
+                            border
                             border-gray-800
                             text-sm"
                     >
-                        <span className={`text-xs font-medium
-                                          px-2 py-0.5 rounded-full
-                                          ${STATUS_COLORS[status]}`}>
+                        <span className={`text-xs font-medium px-2 py-0.5
+                                           rounded-full
+                                           ${STATUS_COLORS[status]}`}>
                             {STATUS_LABELS[status]}
                         </span>
                         <span className="text-gray-400 font-medium">
@@ -245,8 +273,7 @@ function ProjectPage() {
                 {STATUS_COLUMNS.map((status) => (
                     <div
                         key={status}
-                        className="flex
-                            flex-col
+                        className="flex flex-col
                             bg-gray-900/50
                             border
                             border-gray-800
@@ -261,14 +288,11 @@ function ProjectPage() {
                                 py-3
                                 border-b
                                 border-gray-800">
-                            <div className="flex items-center gap-2">
-                                <span className={`text-xs font-semibold
-                                                  px-2 py-0.5
-                                                  rounded-full
-                                                  ${STATUS_COLORS[status]}`}>
-                                    {STATUS_LABELS[status]}
-                                </span>
-                            </div>
+                            <span className={`text-xs font-semibold
+                                               px-2 py-0.5 rounded-full
+                                               ${STATUS_COLORS[status]}`}>
+                                {STATUS_LABELS[status]}
+                            </span>
                             <span className="text-gray-600 text-xs font-medium">
                                 {getTasksByStatus(status).length}
                             </span>
@@ -289,11 +313,11 @@ function ProjectPage() {
                                         workspaceId={workspaceId}
                                         projectId={projectId}
                                         isOwner={isOwner}
+                                        isOwnerOrManager={isOwnerOrManager}
+                                        currentUserEmail={currentUserEmail}
                                         onEdit={handleEditTask}
                                         onDelete={handleDeleteTask}
-                                        onStatusChange={
-                                            handleUpdateStatus
-                                        }
+                                        onStatusChange={handleUpdateStatus}
                                     />
                                 ))
                             )}
@@ -313,7 +337,6 @@ function ProjectPage() {
                     onClose={handleCloseTaskForm}
                 />
             )}
-
         </div>
     )
 }

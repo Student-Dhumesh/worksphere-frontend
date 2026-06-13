@@ -106,6 +106,33 @@ function ProfilePage() {
     return (
         <div className="max-w-xl mx-auto space-y-6">
 
+            <div className="mb-6">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex
+                        items-center
+                        gap-2
+                        text-gray-400
+                        hover:text-white
+                        text-sm
+                        transition-colors">
+                    <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                        />
+                    </svg>
+                    Back
+                </button>
+            </div>
+
             <div>
                 <h2 className="text-2xl font-bold text-white">
                     Profile Settings
